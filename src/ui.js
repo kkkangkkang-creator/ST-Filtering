@@ -21,7 +21,7 @@ const TOGGLES = [
 const PANEL_HTML = `
 <div class="stf-panel inline-drawer">
     <div class="inline-drawer-toggle inline-drawer-header">
-        <b>ST Filtering</b>
+        <b>ST 필터링</b>
         <div class="inline-drawer-icon fa-solid fa-circle-chevron-down down"></div>
     </div>
     <div class="inline-drawer-content">
@@ -132,7 +132,7 @@ export function mountSettingsPanel({ getSettings, getEngine, getLegacyRules, onC
         const replace = $('add-replace').value;
         const added = mergeRules(settings, lines.map(find => ({ find, replace, mode })));
         const skipped = lines.length - added;
-        if (skipped > 0) toastr.info(`이미 있는 규칙 ${skipped}개는 건너뛰었습니다.`, 'ST Filtering');
+        if (skipped > 0) toastr.info(`이미 있는 규칙 ${skipped}개는 건너뛰었습니다.`, 'ST 필터링');
         $('add-find').value = '';
         $('add-replace').value = '';
         onChange();
@@ -158,7 +158,7 @@ export function mountSettingsPanel({ getSettings, getEngine, getLegacyRules, onC
         if (!next) return renderRules();
         const key = ruleKey(next, settings.caseSensitive);
         if (settings.rules.some(other => other !== rule && ruleKey(other, settings.caseSensitive) === key)) {
-            toastr.warning('같은 규칙이 이미 있습니다.', 'ST Filtering');
+            toastr.warning('같은 규칙이 이미 있습니다.', 'ST 필터링');
             return renderRules();
         }
         Object.assign(rule, next);
@@ -268,7 +268,7 @@ export function mountSettingsPanel({ getSettings, getEngine, getLegacyRules, onC
             const imported = parseImport(await file.text());
             const { Popup } = SillyTavern.getContext();
             if (imported.kind === 'settings') {
-                const ok = await Popup.show.confirm('ST Filtering 가져오기', `현재 설정을 규칙 ${imported.settings.rules.length}개짜리 설정으로 교체합니다.`);
+                const ok = await Popup.show.confirm('ST 필터링 가져오기', `현재 설정을 규칙 ${imported.settings.rules.length}개짜리 설정으로 교체합니다.`);
                 if (!ok) return;
                 const settings = getSettings();
                 for (const key of Object.keys(settings)) delete settings[key];
@@ -276,17 +276,17 @@ export function mountSettingsPanel({ getSettings, getEngine, getLegacyRules, onC
                 onChange({ selectorsChanged: true });
             } else {
                 const added = mergeRules(getSettings(), imported.rules);
-                toastr.success(`Word Filter 규칙 ${added}개를 추가했습니다.`, 'ST Filtering');
+                toastr.success(`Word Filter 규칙 ${added}개를 추가했습니다.`, 'ST 필터링');
                 onChange();
             }
         } catch (error) {
             console.error('[ST Filtering] Import failed', error);
-            toastr.error('가져올 규칙을 찾지 못했습니다. ST Filtering 또는 Word Filter 백업 파일인지 확인해 주세요.', 'ST Filtering');
+            toastr.error('가져올 규칙을 찾지 못했습니다. ST 필터링 또는 Word Filter 백업 파일인지 확인해 주세요.', 'ST 필터링');
         }
     });
     $('import-legacy').addEventListener('click', () => {
         const added = mergeRules(getSettings(), getLegacyRules());
-        toastr.info(added ? `Word Filter 규칙 ${added}개를 추가했습니다.` : '새로 가져올 규칙이 없습니다.', 'ST Filtering');
+        toastr.info(added ? `Word Filter 규칙 ${added}개를 추가했습니다.` : '새로 가져올 규칙이 없습니다.', 'ST 필터링');
         if (added) onChange();
     });
 

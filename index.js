@@ -194,7 +194,7 @@ function importLegacyOnFirstRun() {
     if (current.rules.length === 0) {
         const added = mergeRules(current, getLegacyRules());
         if (added > 0) {
-            toastr.info(`Word Filter 규칙 ${added}개를 가져왔습니다. 이중 적용을 막으려면 Word Filter는 꺼 주세요.`, 'ST Filtering', { timeOut: 8000 });
+            toastr.info(`Word Filter 규칙 ${added}개를 가져왔습니다. 이중 적용을 막으려면 Word Filter는 꺼 주세요.`, 'ST 필터링', { timeOut: 8000 });
         }
     }
     saveSettings();
@@ -205,7 +205,7 @@ function registerSlashCommand() {
     if (!SlashCommandParser?.addCommandObject) return;
     SlashCommandParser.addCommandObject(SlashCommand.fromProps({
         name: 'stfilter',
-        helpString: 'ST Filtering을 켜거나 끕니다. 인자가 없으면 현재 상태(on/off)를 반환합니다.',
+        helpString: 'ST 필터링을 켜거나 끕니다. 인자가 없으면 현재 상태(on/off)를 반환합니다.',
         unnamedArgumentList: [
             SlashCommandArgument.fromProps({
                 description: 'on | off | toggle',
@@ -241,10 +241,11 @@ function init() {
         startObserver();
     } catch (error) {
         console.error(LOG_PREFIX, 'Initialization failed', error);
-        toastr.error('ST Filtering을 초기화하지 못했습니다. 브라우저 콘솔을 확인해 주세요.', 'ST Filtering');
+        toastr.error('ST 필터링을 초기화하지 못했습니다. 브라우저 콘솔을 확인해 주세요.', 'ST 필터링');
     }
 }
 
-// APP_READY is replayed for listeners added after it fired.
-const { eventSource, eventTypes } = getContext();
-eventSource.on(eventTypes.APP_READY, init);
+// Extension settings are loaded before extensions are imported, so start
+// right away. The settings panel is placed in the order extensions attach
+// theirs; waiting for APP_READY would push it to the bottom of the list.
+init();
