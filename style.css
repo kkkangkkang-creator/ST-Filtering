@@ -1,0 +1,138 @@
+.stf-panel .inline-drawer-content {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.stf-panel h4 {
+    margin: 6px 0 2px;
+}
+
+.stf-panel.stf-off .stf-rules,
+.stf-panel .stf-rule.stf-disabled {
+    opacity: 0.55;
+}
+
+.stf-warning {
+    padding: 6px 8px;
+    border: 1px solid var(--warning, #e0a800);
+    border-radius: 6px;
+}
+
+.stf-toggles {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 2px 14px;
+}
+
+.stf-hint {
+    opacity: 0.75;
+}
+
+.stf-add {
+    display: grid;
+    grid-template-columns: 1fr 1fr auto auto;
+    gap: 6px;
+    align-items: start;
+}
+
+.stf-add textarea {
+    resize: vertical;
+    min-height: 2.4em;
+}
+
+.stf-list-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 8px;
+}
+
+.stf-list-header input {
+    max-width: 50%;
+}
+
+.stf-rules {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    max-height: 50vh;
+    overflow-y: auto;
+}
+
+.stf-rule {
+    display: grid;
+    grid-template-columns: auto minmax(0, 1fr) auto minmax(0, 1fr) auto auto;
+    gap: 6px;
+    align-items: center;
+}
+
+.stf-rule .text_pole {
+    margin: 0;
+}
+
+.stf-rule.stf-invalid .stf-find {
+    outline: 1px solid var(--fullred, #d33);
+}
+
+.stf-arrow {
+    opacity: 0.6;
+}
+
+.stf-controls {
+    display: flex;
+    gap: 2px;
+}
+
+.stf-icon {
+    margin: 0;
+    padding: 4px 6px;
+}
+
+.stf-icon.disabled {
+    opacity: 0.3;
+    pointer-events: none;
+}
+
+.stf-empty {
+    opacity: 0.6;
+    text-align: center;
+}
+
+.stf-section summary {
+    cursor: pointer;
+    margin: 4px 0;
+}
+
+.stf-preview {
+    white-space: pre-wrap;
+    padding: 6px 8px;
+    border-radius: 6px;
+    background: var(--black30a, rgba(0, 0, 0, 0.3));
+    min-height: 1.5em;
+}
+
+.stf-buttons {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+}
+
+@media (max-width: 1000px) {
+    .stf-add {
+        grid-template-columns: 1fr;
+    }
+
+    .stf-rule {
+        grid-template-columns: auto minmax(0, 1fr) minmax(0, 1fr) auto;
+    }
+
+    .stf-rule .stf-arrow {
+        display: none;
+    }
+
+    .stf-rule .stf-mode,
+    .stf-rule .stf-controls {
+        grid-column: 2 / -1;
+    }
+}

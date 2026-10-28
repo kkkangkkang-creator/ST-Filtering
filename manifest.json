@@ -1,0 +1,14 @@
+{
+    "display_name": "ST Filtering",
+    "loading_order": 100,
+    "requires": [],
+    "optional": [],
+    "js": "index.js",
+    "css": "style.css",
+    "author": "kkangkkang",
+    "version": "1.0.0",
+    "homePage": "https://github.com/kkkangkkang-creator/ST-Filtering",
+    "auto_update": true,
+    "generate_interceptor": "stFilteringInterceptor",
+    "minimum_client_version": "1.12.0"
+}
