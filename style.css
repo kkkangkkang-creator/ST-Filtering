@@ -1,138 +1,449 @@
-.stf-panel .inline-drawer-content {
+/* Follows the user's SillyTavern theme. Separators are hairlines; nothing
+   floats in cards, so the rule list reads like a table. */
+.stf,
+.stf-drawer {
+    --stf-line: var(--SmartThemeBorderColor, rgba(255, 255, 255, 0.15));
+    --stf-text: var(--SmartThemeBodyColor, inherit);
+    --stf-muted: color-mix(in srgb, var(--stf-text) 62%, transparent);
+    --stf-faint: color-mix(in srgb, var(--stf-text) 8%, transparent);
+    --stf-accent: var(--SmartThemeQuoteColor, currentColor);
+    --stf-danger: var(--fullred, #d9534f);
+}
+
+.stf {
     display: flex;
     flex-direction: column;
-    gap: 8px;
+    gap: 12px;
+    width: 100%;
+    color: var(--stf-text);
+    text-align: left;
 }
 
-.stf-panel h4 {
-    margin: 6px 0 2px;
+.stf p {
+    margin: 0;
 }
 
-.stf-panel.stf-off .stf-rules,
-.stf-panel .stf-rule.stf-disabled {
-    opacity: 0.55;
+.stf .text_pole {
+    margin: 0;
+    min-height: 0;
 }
 
-.stf-warning {
-    padding: 6px 8px;
-    border: 1px solid var(--warning, #e0a800);
-    border-radius: 6px;
+/* Header */
+
+.stf-head {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 12px;
 }
 
-.stf-toggles {
+.stf-title {
+    margin: 0;
+    font-size: 1.25em;
+    line-height: 1.2;
+}
+
+.stf-meta {
+    margin-top: 2px;
+    color: var(--stf-muted);
+    font-size: 0.9em;
+}
+
+.stf-master {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    padding: 4px 10px;
+    border: 1px solid var(--stf-line);
+    border-radius: 999px;
+    cursor: pointer;
+    white-space: nowrap;
+}
+
+.stf-scope {
     display: flex;
     flex-wrap: wrap;
-    gap: 2px 14px;
+    align-items: center;
+    gap: 6px 18px;
+}
+
+.stf-scope label,
+.stf-option {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    cursor: pointer;
+}
+
+.stf-scope-label,
+.stf-toolbar-label,
+.stf-test-label {
+    color: var(--stf-muted);
+    font-size: 0.85em;
+}
+
+.stf-disabled .stf-scope,
+.stf-disabled .stf-table {
+    opacity: 0.5;
+}
+
+.stf-notice {
+    padding: 6px 10px;
+    border-left: 3px solid var(--stf-danger);
+    background: var(--stf-faint);
 }
 
 .stf-hint {
-    opacity: 0.75;
+    color: var(--stf-muted);
+    font-size: 0.85em;
+    line-height: 1.45;
 }
+
+/* Tabs */
+
+.stf-tabs {
+    display: flex;
+    gap: 20px;
+    border-bottom: 1px solid var(--stf-line);
+}
+
+.stf-tab {
+    margin-bottom: -1px;
+    padding: 6px 0;
+    border: 0;
+    border-bottom: 2px solid transparent;
+    background: none;
+    color: var(--stf-muted);
+    font: inherit;
+    cursor: pointer;
+}
+
+.stf-tab:hover {
+    color: var(--stf-text);
+}
+
+.stf-tab.active {
+    border-bottom-color: var(--stf-accent);
+    color: var(--stf-text);
+    font-weight: 600;
+}
+
+.stf-pane {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.stf-pane[hidden] {
+    display: none;
+}
+
+/* Add row */
 
 .stf-add {
     display: grid;
-    grid-template-columns: 1fr 1fr auto auto;
-    gap: 6px;
+    grid-template-columns: minmax(0, 1.2fr) minmax(0, 1fr) 6.5em auto;
+    gap: 8px;
     align-items: start;
 }
 
-.stf-add textarea {
-    resize: vertical;
-    min-height: 2.4em;
+.stf-add > * {
+    box-sizing: border-box;
+    min-height: 2.3em;
 }
 
-.stf-list-header {
+.stf-add textarea {
+    height: 2.3em;
+    max-height: 12em;
+    resize: none;
+    overflow-y: auto;
+    line-height: 1.4;
+}
+
+.stf .stf-add-button {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0;
+    padding: 0 16px;
+    height: 2.3em;
+    white-space: nowrap;
+}
+
+/* Rule table */
+
+.stf-toolbar {
     display: flex;
     align-items: center;
     justify-content: space-between;
-    gap: 8px;
+    gap: 12px;
+    margin-top: 4px;
 }
 
-.stf-list-header input {
-    max-width: 50%;
+.stf-search {
+    max-width: 16em;
 }
 
-.stf-rules {
-    display: flex;
-    flex-direction: column;
-    gap: 4px;
-    max-height: 50vh;
-    overflow-y: auto;
+.stf-toolbar[hidden],
+.stf-row-head[hidden] {
+    display: none;
 }
 
-.stf-rule {
+.stf-table {
+    border-top: 1px solid var(--stf-line);
+}
+
+.stf-row {
     display: grid;
-    grid-template-columns: auto minmax(0, 1fr) auto minmax(0, 1fr) auto auto;
-    gap: 6px;
+    grid-template-columns: 1.4em minmax(0, 1.2fr) minmax(0, 1fr) 6.5em 5.4em;
+    gap: 4px 8px;
     align-items: center;
+    padding: 3px 0;
+    border-bottom: 1px solid var(--stf-line);
 }
 
-.stf-rule .text_pole {
+.stf-row:not(.stf-row-head):hover {
+    background: var(--stf-faint);
+}
+
+.stf-row-head {
+    padding: 5px 0;
+    color: var(--stf-muted);
+    font-size: 0.85em;
+}
+
+.stf-row-head span:nth-child(2),
+.stf-row-head span:nth-child(3) {
+    padding-left: 7px;
+}
+
+.stf-row input[type="checkbox"] {
+    justify-self: center;
     margin: 0;
 }
 
-.stf-rule.stf-invalid .stf-find {
-    outline: 1px solid var(--fullred, #d33);
+/* Inputs sit flat in the table and only show a border when touched. */
+.stf-row .text_pole {
+    border-color: transparent;
+    background: transparent;
 }
 
-.stf-arrow {
-    opacity: 0.6;
+.stf-row .text_pole:hover {
+    border-color: var(--stf-line);
 }
 
-.stf-controls {
+.stf-row .text_pole:focus {
+    border-color: var(--stf-accent);
+    background: var(--stf-faint);
+}
+
+.stf-cell-replace::placeholder {
+    color: var(--stf-muted);
+    font-style: italic;
+}
+
+.stf-row.stf-off .stf-cell-find,
+.stf-row.stf-off .stf-cell-replace,
+.stf-row.stf-off .stf-cell-mode {
+    opacity: 0.45;
+    text-decoration: line-through;
+}
+
+.stf-row.stf-invalid .stf-cell-find {
+    border-color: var(--stf-danger);
+}
+
+.stf-row-error {
+    grid-column: 2 / -1;
+    padding: 0 7px 2px;
+    color: var(--stf-danger);
+    font-size: 0.85em;
+}
+
+.stf-cell-controls {
     display: flex;
-    gap: 2px;
+    justify-content: flex-end;
 }
 
 .stf-icon {
-    margin: 0;
-    padding: 4px 6px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 1.8em;
+    height: 1.8em;
+    padding: 0;
+    border: 0;
+    border-radius: 4px;
+    background: none;
+    color: var(--stf-muted);
+    cursor: pointer;
 }
 
-.stf-icon.disabled {
-    opacity: 0.3;
-    pointer-events: none;
+.stf-icon:hover:not(:disabled) {
+    background: var(--stf-faint);
+    color: var(--stf-text);
+}
+
+.stf-icon-danger:hover:not(:disabled) {
+    color: var(--stf-danger);
+}
+
+.stf-icon:disabled {
+    opacity: 0.25;
+    cursor: default;
 }
 
 .stf-empty {
-    opacity: 0.6;
+    padding: 18px 0;
+    color: var(--stf-muted);
     text-align: center;
 }
 
-.stf-section summary {
-    cursor: pointer;
-    margin: 4px 0;
+.stf-empty[hidden] {
+    display: none;
 }
 
-.stf-preview {
-    white-space: pre-wrap;
-    padding: 6px 8px;
-    border-radius: 6px;
-    background: var(--black30a, rgba(0, 0, 0, 0.3));
-    min-height: 1.5em;
+/* Preview */
+
+.stf-test-input {
+    resize: vertical;
+    line-height: 1.45;
 }
 
-.stf-buttons {
+.stf-test-result {
     display: flex;
-    flex-wrap: wrap;
+    flex-direction: column;
+    gap: 4px;
+}
+
+.stf-test-output {
+    min-height: 3em;
+    padding: 8px 10px;
+    border: 1px solid var(--stf-line);
+    border-radius: 5px;
+    white-space: pre-wrap;
+    line-height: 1.45;
+}
+
+/* Options & backup */
+
+.stf-options,
+.stf-actions {
+    display: flex;
+    flex-direction: column;
+}
+
+.stf-option,
+.stf-action {
+    padding: 10px 0;
+    border-bottom: 1px solid var(--stf-line);
+}
+
+.stf-option {
+    align-items: flex-start;
+    gap: 10px;
+}
+
+.stf-option input {
+    margin: 3px 0 0;
+}
+
+.stf-option span {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+}
+
+.stf-option small,
+.stf-action p {
+    color: var(--stf-muted);
+    font-size: 0.85em;
+}
+
+.stf-field {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    padding-top: 6px;
+}
+
+.stf-action {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+}
+
+.stf-action[hidden] {
+    display: none;
+}
+
+.stf .stf-action .menu_button {
+    margin: 0;
+    white-space: nowrap;
+}
+
+/* Extensions panel drawer */
+
+.stf-drawer .inline-drawer-content {
+    display: flex;
+    flex-direction: column;
     gap: 6px;
 }
 
-@media (max-width: 1000px) {
+.stf-drawer-row {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.stf-drawer-row .stf-meta {
+    flex: 1;
+    margin: 0;
+}
+
+.stf-drawer .stf-drawer-row .menu_button {
+    margin: 0;
+}
+
+.stf-drawer .stf-hint {
+    margin: 0;
+}
+
+/* Narrow screens: each rule takes two lines. */
+@media (max-width: 700px) {
     .stf-add {
-        grid-template-columns: 1fr;
+        grid-template-columns: minmax(0, 1fr) 6.5em;
     }
 
-    .stf-rule {
-        grid-template-columns: auto minmax(0, 1fr) minmax(0, 1fr) auto;
+    .stf-add textarea,
+    .stf-add input {
+        grid-column: 1 / -1;
     }
 
-    .stf-rule .stf-arrow {
+    /* check | find    | controls
+               | replace | mode     */
+    .stf-row {
+        grid-template-columns: 1.4em minmax(0, 1fr) 6em;
+        grid-template-areas:
+            "check find controls"
+            ".     replace mode";
+        row-gap: 0;
+        padding: 4px 0;
+    }
+
+    .stf-cell-check { grid-area: check; }
+    .stf-cell-find { grid-area: find; }
+    .stf-cell-replace { grid-area: replace; }
+    .stf-cell-mode { grid-area: mode; }
+    .stf-cell-controls { grid-area: controls; }
+
+    .stf-row-head {
         display: none;
     }
 
-    .stf-rule .stf-mode,
-    .stf-rule .stf-controls {
-        grid-column: 2 / -1;
+    .stf-search {
+        max-width: none;
+        flex: 1;
     }
 }

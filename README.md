@@ -1,4 +1,4 @@
-# ST 필터링 (ST Filtering)
+# 필터링 (ST Filtering)
 
 AI 메시지의 글자·단어·문구를 지우거나 바꾸는 SillyTavern 확장입니다. 화면(번역문 포함)과 AI에게 보내는 내용에 모두 적용되며, 저장된 채팅 원문은 바꾸지 않습니다.
 
@@ -12,9 +12,9 @@ SillyTavern의 확장 설치 화면에 다음 주소를 입력합니다.
 https://github.com/kkkangkkang-creator/ST-Filtering
 ```
 
-설정은 **확장(Extensions) 패널 → ST 필터링**에 있습니다. 확장 목록 위쪽에 표시됩니다.
+채팅 입력창 왼쪽 **요술봉 메뉴 → 필터링**을 누르면 규칙 관리 창이 열립니다. 확장(Extensions) 패널의 **필터링** 항목에서는 켜고 끄거나 같은 창을 열 수 있습니다.
 
-> **Word Filter에서 옮겨오는 경우:** 처음 켜면 Word Filter의 규칙을 자동으로 가져옵니다. 같은 규칙이 두 번 적용되지 않도록 Word Filter는 꺼 주세요. Word Filter의 "원문 저장 모드"로 이미 바뀐 채팅이 있다면, 끄기 전에 Word Filter에서 **원문 복원**을 먼저 해 두세요. ST 필터링은 원문을 바꾸지 않으므로 그 백업을 읽지 않습니다.
+> **Word Filter에서 옮겨오는 경우:** 처음 켜면 Word Filter의 규칙을 자동으로 가져옵니다. 같은 규칙이 두 번 적용되지 않도록 Word Filter는 꺼 주세요. Word Filter의 "원문 저장 모드"로 이미 바뀐 채팅이 있다면, 끄기 전에 Word Filter에서 **원문 복원**을 먼저 해 두세요. 필터링은 원문을 바꾸지 않으므로 그 백업을 읽지 않습니다.
 
 ## 어디에 적용되나요
 
