@@ -18,8 +18,14 @@ const context = {
     chat,
     extensionSettings: { 'word-filter': { deleteRules: [{ text: 'very much' }] } },
     saveSettingsDebounced: () => {},
-    eventSource: { on: (_event, handler) => handler() },
-    eventTypes: { APP_READY: 'app_ready' },
+    eventSource: {
+        handlers: {},
+        on(event, handler) { (this.handlers[event] ??= []).push(handler); },
+        async emit(event, ...args) { for (const handler of this.handlers[event] ?? []) await handler(...args); },
+    },
+    eventTypes: { MESSAGE_RECEIVED: 'message_received', MESSAGE_EDITED: 'message_edited', CHARACTER_MESSAGE_RENDERED: 'character_message_rendered' },
+    updateMessageBlock: () => {},
+    saveChat: async () => {},
     SlashCommandParser: { addCommandObject: command => { commands[command.name] = command; } },
     SlashCommand: { fromProps: props => props },
     SlashCommandArgument: { fromProps: props => props },
@@ -158,4 +164,33 @@ test('a broken regex shows an error on its row instead of failing', () => {
     panel('add').dispatchEvent(new window.Event('click'));
     const error = document.querySelector('.stf-dialog .stf-row-error');
     assert.match(error.textContent, /정규식 오류/);
+});
+
+test('"before translation" filters the stored reply before a translator reads it, and can be undone', async () => {
+    // Remove the broken regex added by the previous test.
+    document.querySelector('.stf-dialog .stf-row.stf-invalid .stf-icon-danger').dispatchEvent(new window.Event('click'));
+    const sourceToggle = document.querySelector('.stf-dialog input[data-key="applyToSource"]');
+    sourceToggle.checked = true;
+    sourceToggle.dispatchEvent(new window.Event('change'));
+    await wait();
+    assert.equal(context.extensionSettings['st-filtering'].applyToSource, true);
+
+    let translatorSaw = null;
+    context.eventSource.on('character_message_rendered', id => { translatorSaw = chat[id].mes; });
+    chat.push({ mes: '그는 기계적인 미소를 지었다.', is_user: false, swipe_id: 0, swipes: ['그는 기계적인 미소를 지었다.'], swipe_info: [{ extra: {} }], extra: {} });
+    await context.eventSource.emit('message_received', 2, 'normal');
+    await context.eventSource.emit('character_message_rendered', 2, 'normal');
+    assert.equal(translatorSaw, '그는 미소를 지었다.');
+    assert.equal(chat[2].swipes[0], '그는 미소를 지었다.');
+
+    panel('restore-source').dispatchEvent(new window.Event('click'));
+    await wait();
+    assert.equal(chat[2].mes, '그는 기계적인 미소를 지었다.');
+    assert.equal(context.extensionSettings['st-filtering'].applyToSource, false);
+});
+
+test('"before translation" is off by default and leaves stored replies alone', async () => {
+    chat.push({ mes: '기계적인 대답', is_user: false, extra: {} });
+    await context.eventSource.emit('message_received', 3, 'normal');
+    assert.equal(chat[3].mes, '기계적인 대답');
 });

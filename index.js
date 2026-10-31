@@ -8,6 +8,7 @@ import {
     normalizeSettings,
     rulesFromLegacy,
 } from './src/settings.js';
+import { applyToSource, restoreSource } from './src/source-filter.js';
 import { mountUi } from './src/ui.js';
 
 const LOG_PREFIX = '[ST Filtering]';
@@ -171,6 +172,57 @@ globalThis.stFilteringInterceptor = async function stFilteringInterceptor(chat) 
 };
 
 // ---------------------------------------------------------------------------
+// Source (optional, off by default): translators read the stored message, so
+// to have them translate filtered text the stored message itself is filtered.
+// MESSAGE_RECEIVED fires before CHARACTER_MESSAGE_RENDERED, where LLM
+// Translator and Interpres start auto-translation.
+// ---------------------------------------------------------------------------
+
+function filterSource(messageId, { redraw = false } = {}) {
+    try {
+        const current = getSettings();
+        if (!isActive() || !current.applyToSource) return;
+        const context = getContext();
+        const id = Number(messageId);
+        const message = context.chat?.[id];
+        if (!message || message.is_user || !isFilterableMessage(message)) return;
+        if (!applyToSource(message, engine, { includeCode: current.includeCode })) return;
+        // A streamed reply is already on screen; draw it again from the new text.
+        if (redraw && document.querySelector(`#chat .mes[mesid="${id}"]`)) context.updateMessageBlock?.(id, message);
+    } catch (error) {
+        console.error(LOG_PREFIX, 'Source filter failed; the message was left unchanged', error);
+    }
+}
+
+async function restoreSourceInChat() {
+    const context = getContext();
+    const chat = context.chat ?? [];
+    const result = { restored: 0, conflicts: 0, messages: 0 };
+    const changed = [];
+    chat.forEach((message, index) => {
+        const outcome = restoreSource(message);
+        result.restored += outcome.restored;
+        result.conflicts += outcome.conflicts;
+        if (outcome.changed) changed.push(index);
+    });
+    result.messages = changed.length;
+    if (changed.length) {
+        await context.saveChat?.();
+        for (const index of changed) {
+            if (document.querySelector(`#chat .mes[mesid="${index}"]`)) context.updateMessageBlock?.(index, chat[index]);
+        }
+    }
+    return result;
+}
+
+function registerEvents() {
+    const { eventSource, eventTypes } = getContext();
+    eventSource.on(eventTypes.MESSAGE_RECEIVED, id => filterSource(id, { redraw: true }));
+    // An edit becomes the new original and is filtered again.
+    eventSource.on(eventTypes.MESSAGE_EDITED, id => filterSource(id));
+}
+
+// ---------------------------------------------------------------------------
 
 function rebuild({ restoreFirst = false } = {}) {
     engine = createEngine(getSettings());
@@ -235,8 +287,10 @@ function init() {
             getSettings,
             getEngine: () => engine,
             getLegacyRules,
+            restoreSourceInChat,
             onChange: onSettingsChanged,
         });
+        registerEvents();
         registerSlashCommand();
         startObserver();
     } catch (error) {

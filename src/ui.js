@@ -33,6 +33,7 @@ const MANAGER_HTML = `
         <span class="stf-scope-label">적용</span>
         <label><input type="checkbox" data-key="applyToDisplay"> 화면 · 번역문</label>
         <label><input type="checkbox" data-key="applyToPrompt"> AI에게 보내는 내용</label>
+        <label title="번역 확장이 읽기 전에 저장된 원문에서 지웁니다. 백업 탭에서 되돌릴 수 있습니다."><input type="checkbox" data-key="applyToSource"> 번역 전 원문</label>
     </div>
 
     <p class="stf-notice" data-stf="legacy-warning" hidden>Word Filter가 켜져 있어 같은 규칙이 두 번 적용될 수 있습니다. 확장 관리에서 Word Filter를 꺼 주세요.</p>
@@ -93,6 +94,10 @@ const MANAGER_HTML = `
             <div class="stf-action">
                 <div><strong>가져오기</strong><p>필터링 파일은 현재 설정을 교체하고, Word Filter 백업 파일은 규칙만 추가합니다.</p></div>
                 <button type="button" class="menu_button" data-stf="import">파일 선택</button>
+            </div>
+            <div class="stf-action">
+                <div><strong>원문 되돌리기</strong><p>“번역 전 원문”으로 지운 현재 채팅의 메시지를 원래 글로 되돌리고, 그 옵션을 끕니다. 직접 고친 메시지는 건너뜁니다.</p></div>
+                <button type="button" class="menu_button" data-stf="restore-source">되돌리기</button>
             </div>
             <div class="stf-action" data-stf="legacy-row" hidden>
                 <div><strong>Word Filter 규칙</strong><p>설치된 Word Filter의 규칙 중 없는 것만 추가합니다.</p></div>
@@ -165,10 +170,22 @@ function describe(settings) {
     return active === settings.rules.length ? `규칙 ${active}개` : `규칙 ${settings.rules.length}개 · ${active}개 사용 중`;
 }
 
+const SOURCE_MODE_CONFIRM = '새로 받는 AI 답변을 저장된 원문에서 바로 지웁니다. 번역 확장은 지워진 글을 번역하게 됩니다.\n\n'
+    + '원래 글은 메시지에 함께 저장되어, 백업 탭의 “원문 되돌리기”로 되돌릴 수 있습니다. 이미 받은 메시지는 바뀌지 않습니다.';
+
 function bindToggles(root, getSettings, onChange) {
     for (const input of root.querySelectorAll('input[data-key]')) {
-        input.addEventListener('change', () => {
-            getSettings()[input.dataset.key] = input.checked;
+        input.addEventListener('change', async () => {
+            const key = input.dataset.key;
+            if (key === 'applyToSource' && input.checked) {
+                const { Popup } = SillyTavern.getContext();
+                const ok = await Popup.show.confirm('번역 전 원문에서 지우기', SOURCE_MODE_CONFIRM);
+                if (!ok) {
+                    input.checked = false;
+                    return;
+                }
+            }
+            getSettings()[key] = input.checked;
             onChange();
         });
     }
@@ -179,7 +196,7 @@ function syncToggles(root, settings) {
 }
 
 /** The full rule manager. Rendered inside a popup. */
-function createManagerView({ getSettings, getEngine, getLegacyRules, onChange }) {
+function createManagerView({ getSettings, getEngine, getLegacyRules, restoreSourceInChat, onChange }) {
     const root = fromHtml(MANAGER_HTML);
     const $ = name => root.querySelector(`[data-stf="${name}"]`);
     let activeTab = 'rules';
@@ -392,6 +409,16 @@ function createManagerView({ getSettings, getEngine, getLegacyRules, onChange })
             console.error('[ST Filtering] Import failed', error);
             toastr.error('가져올 규칙을 찾지 못했습니다. 필터링 또는 Word Filter 백업 파일인지 확인해 주세요.', TITLE);
         }
+    });
+    $('restore-source').addEventListener('click', async () => {
+        const { Popup } = SillyTavern.getContext();
+        const ok = await Popup.show.confirm('원문 되돌리기', '현재 채팅에서 “번역 전 원문”으로 지운 메시지를 원래 글로 되돌립니다. 번역문은 다시 번역해야 반영됩니다.');
+        if (!ok) return;
+        const result = await restoreSourceInChat();
+        getSettings().applyToSource = false;
+        onChange();
+        const skipped = result.conflicts ? ` 직접 고친 ${result.conflicts}개는 건너뛰었습니다.` : '';
+        toastr.info(result.restored ? `메시지 ${result.messages}개를 되돌렸습니다.${skipped}` : `되돌릴 메시지가 없습니다.${skipped}`, TITLE);
     });
     $('import-legacy').addEventListener('click', () => {
         const added = mergeRules(getSettings(), getLegacyRules());

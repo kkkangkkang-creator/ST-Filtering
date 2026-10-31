@@ -10,6 +10,7 @@ export function defaultSettings() {
         enabled: true,
         applyToDisplay: true,
         applyToPrompt: true,
+        applyToSource: false,
         includeUser: false,
         includeCode: false,
         caseSensitive: false,
